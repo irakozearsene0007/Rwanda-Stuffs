@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Translated Movie/TV Series</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .upload-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .upload-header {
+            background: #008753;
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .upload-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-section {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            color: #008753;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #FAD201;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            font-size: 1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .required::after {
+            content: " *";
+            color: #dc3545;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus {
+            border-color: #008753;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 135, 83, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-help {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 3px;
+        }
+
+        /* Translator Selection */
+        .translator-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .translator-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 0.8rem;
+            margin-top: 0.8rem;
+        }
+
+        .translator-option {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .translator-option:hover {
+            border-color: #00A1DE;
+        }
+
+        .translator-option.selected {
+            border-color: #008753;
+            background: rgba(0, 135, 83, 0.1);
+        }
+
+        .add-translator {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .add-translator input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        /* Content Type */
+        .content-type {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .type-option {
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .type-option.selected {
+            background: #008753;
+            color: white;
+            border-color: #008753;
+        }
+
+        /* Filename Preview */
+        .filename-preview {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-family: monospace;
+            font-size: 1rem;
+            color: #333;
+            overflow-x: auto;
+            border: 1px solid #ddd;
+        }
+
+        /* Tags */
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .tag {
+            background: #e9ecef;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tag-remove {
+            color: #dc3545;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            padding: 1.5rem;
+        }
+
+        .btn {
+            padding: 10px 25px;
+            background: #008753;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: #006641;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Additional Styles */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .episode-info {
+            background: #f0f9ff;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            border: 1px solid #b3e0ff;
+            display: none;
+        }
+
+        .character-counter {
+            font-size: 0.8rem;
+            text-align: right;
+            margin-top: 3px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .translator-options {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            
+            .content-type {
+                flex-direction: column;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .form-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <div class="upload-header">
+            <h1><i class="fas fa-language"></i> Upload Translated Content</h1>
+            <p>Smart filename format: [TITLE][TYPE][TRANSLATOR].md</p>
+        </div>
+
+        <!-- Alert -->
+        <div id="alertMessage" class="alert" style="display: none;"></div>
+
+        <!-- Form -->
+        <form id="uploadForm">
+            <!-- Content Type -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-film"></i> Content Type</h2>
+                <div class="content-type">
+                    <div class="type-option selected" data-type="MOVIE">
+                        <i class="fas fa-film"></i> MOVIE
+                    </div>
+                    <div class="type-option" data-type="TV-SERIES">
+                        <i class="fas fa-tv"></i> TV SERIES
+                    </div>
+                </div>
+                <input type="hidden" id="contentType" value="MOVIE" required>
+                
+                <!-- Episode Info (only for TV-SERIES) -->
+                <div class="episode-info" id="episodeInfo">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="seasonNumber">Season Number</label>
+                            <input type="number" id="seasonNumber" class="form-control" min="1" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="episodeNumber">Episode Number</label>
+                            <input type="number" id="episodeNumber" class="form-control" min="1" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="episodeTitle">Episode Title</label>
+                            <input type="text" id="episodeTitle" class="form-control" placeholder="Episode title">
+                        </div>
+                        <div class="form-group">
+                            <label for="totalSeasons">Total Seasons</label>
+                            <input type="number" id="totalSeasons" class="form-control" min="1" value="1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Translator Selection -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-user-check"></i> Translator</h2>
+                <div class="translator-section">
+                    <div class="translator-options" id="translatorOptions">
+                        <!-- Hard-coded translators -->
+                        <div class="translator-option selected" data-translator="ROCKY">ROCKY</div>
+                        <div class="translator-option" data-translator="SARAH">SARAH</div>
+                        <div class="translator-option" data-translator="JEAN">JEAN</div>
+                        <div class="translator-option" data-translator="GRACE">GRACE</div>
+                        <div class="translator-option" data-translator="ERIC">ERIC</div>
+                        <div class="translator-option" data-translator="DAVID">DAVID</div>
+                        <div class="translator-option" data-translator="ANNA">ANNA</div>
+                        <div class="translator-option" data-translator="MICHAEL">MICHAEL</div>
+                    </div>
+                    
+                    <div class="add-translator">
+                        <input type="text" id="newTranslator" placeholder="Add new translator name">
+                        <button type="button" id="addTranslatorBtn" class="btn">Add</button>
+                    </div>
+                </div>
+                <input type="hidden" id="translator" value="ROCKY" required>
+            </div>
+
+            <!-- Smart Filename Preview -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-file-code"></i> Filename Preview</h2>
+                <div class="filename-preview" id="filenamePreview">
+                    [MOVIE-TITLE][MOVIE][ROCKY].md
+                </div>
+            </div>
+
+            <!-- 1. BASIC INFORMATION -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-info-circle"></i> Basic Information</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="title" class="required">Title</label>
+                        <input type="text" id="title" class="form-control" required 
+                               placeholder="Movie/Series title">
+                        <div class="character-counter" id="titleCounter">0/100</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="originalTitle">Original Title</label>
+                        <input type="text" id="originalTitle" class="form-control" 
+                               placeholder="Original title in source language">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="releaseYear" class="required">Release Year</label>
+                        <input type="number" id="releaseYear" class="form-control" required 
+                               min="1900" max="2030" value="2024">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="releaseDate">Release Date</label>
+                        <input type="date" id="releaseDate" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="duration" class="required">Duration</label>
+                        <input type="text" id="duration" class="form-control" required 
+                               placeholder="e.g., 2h 15m">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quality" class="required">Quality</label>
+                        <select id="quality" class="form-control" required>
+                            <option value="480p">480p SD</option>
+                            <option value="720p">720p HD</option>
+                            <option value="1080p" selected>1080p Full HD</option>
+                            <option value="4K">4K Ultra HD</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. TRANSLATION INFO -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-language"></i> Translation Information</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="originalLanguage">Original Language</label>
+                        <select id="originalLanguage" class="form-control">
+                            <option value="Kinyarwanda" selected>Kinyarwanda</option>
+                            <option value="English">English</option>
+                            <option value="French">French</option>
+                            <option value="Swahili">Swahili</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="translatedLanguage">Translated Language</label>
+                        <select id="translatedLanguage" class="form-control">
+                            <option value="English" selected>English</option>
+                            <option value="Kinyarwanda">Kinyarwanda</option>
+                            <option value="French">French</option>
+                            <option value="Swahili">Swahili</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="translationDirection">Translation Direction</label>
+                        <select id="translationDirection" class="form-control">
+                            <option value="Kinyarwanda-to-English" selected>Kinyarwanda → English</option>
+                            <option value="English-to-Kinyarwanda">English → Kinyarwanda</option>
+                            <option value="French-to-Kinyarwanda">French → Kinyarwanda</option>
+                            <option value="English-to-French">English → French</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="audioQuality">Audio Quality</label>
+                        <select id="audioQuality" class="form-control">
+                            <option value="Good" selected>Good</option>
+                            <option value="Excellent">Excellent</option>
+                            <option value="Fair">Fair</option>
+                            <option value="Poor">Poor</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="subtitlesAvailable">
+                    <label for="subtitlesAvailable">Subtitles Available</label>
+                </div>
+                
+                <div class="form-group">
+                    <label for="subtitleLanguages">Subtitle Languages</label>
+                    <input type="text" id="subtitleLanguages" class="form-control" 
+                           placeholder="Comma separated (English, French)">
+                </div>
+            </div>
+
+            <!-- 3. MEDIA URLs -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-video"></i> Media URLs</h2>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="videoUrl" class="required">Video URL</label>
+                        <input type="url" id="videoUrl" class="form-control" required 
+                               placeholder="YouTube or direct video link">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="posterUrl" class="required">Poster Image URL</label>
+                        <input type="url" id="posterUrl" class="form-control" required 
+                               placeholder="Poster image URL (800x1200px recommended)">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="thumbnailUrl">Thumbnail URL</label>
+                        <input type="url" id="thumbnailUrl" class="form-control" 
+                               placeholder="Thumbnail image URL">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="trailerUrl">Trailer URL</label>
+                        <input type="url" id="trailerUrl" class="form-control" 
+                               placeholder="YouTube trailer link">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="backdropUrl">Backdrop Image URL</label>
+                        <input type="url" id="backdropUrl" class="form-control" 
+                               placeholder="Background image URL">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="additionalImages">Additional Images</label>
+                        <input type="text" id="additionalImages" class="form-control" 
+                               placeholder="Comma separated image URLs">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. CONTENT DETAILS -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-align-left"></i> Content Details</h2>
+                
+                <div class="form-group full-width">
+                    <label for="tagline">Tagline</label>
+                    <input type="text" id="tagline" class="form-control" 
+                           placeholder="A catchy one-liner about the movie">
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="shortDescription" class="required">Short Description</label>
+                    <textarea id="shortDescription" class="form-control" required rows="2"
+                              placeholder="Brief description (150 characters max)"></textarea>
+                    <div class="character-counter" id="shortDescCounter">0/150</div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="description" class="required">Full Description</label>
+                    <textarea id="description" class="form-control" required rows="4"
+                              placeholder="Full movie/series synopsis..."></textarea>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="plot">Detailed Plot</label>
+                    <textarea id="plot" class="form-control" rows="4"
+                              placeholder="Detailed plot with spoilers (optional)"></textarea>
+                </div>
+            </div>
+
+            <!-- 5. CAST & CREW -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-users"></i> Cast & Crew</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="director">Director</label>
+                        <input type="text" id="director" class="form-control" 
+                               placeholder="Director name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="writer">Writer</label>
+                        <input type="text" id="writer" class="form-control" 
+                               placeholder="Writer name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="producer">Producer</label>
+                        <input type="text" id="producer" class="form-control" 
+                               placeholder="Producer name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cinematographer">Cinematographer</label>
+                        <input type="text" id="cinematographer" class="form-control" 
+                               placeholder="Cinematographer name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="composer">Music Composer</label>
+                        <input type="text" id="composer" class="form-control" 
+                               placeholder="Composer name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editor">Editor</label>
+                        <input type="text" id="editor" class="form-control" 
+                               placeholder="Editor name">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="mainCast">Main Cast</label>
+                        <input type="text" id="mainCast" class="form-control" 
+                               placeholder="Lead actors separated by commas">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="supportingCast">Supporting Cast</label>
+                        <input type="text" id="supportingCast" class="form-control" 
+                               placeholder="Supporting actors">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="voiceCast">Voice Cast (Animation)</label>
+                        <input type="text" id="voiceCast" class="form-control" 
+                               placeholder="Voice actors">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. PRODUCTION DETAILS -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-cogs"></i> Production Details</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="countryOfOrigin">Country of Origin</label>
+                        <input type="text" id="countryOfOrigin" class="form-control" 
+                               placeholder="e.g., Rwanda, USA, France" value="Rwanda">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productionCompanies">Production Companies</label>
+                        <input type="text" id="productionCompanies" class="form-control" 
+                               placeholder="Company names separated by commas">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="distributors">Distributors</label>
+                        <input type="text" id="distributors" class="form-control" 
+                               placeholder="Distribution companies">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="filmingLocations">Filming Locations</label>
+                        <input type="text" id="filmingLocations" class="form-control" 
+                               placeholder="Filming locations">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="budget">Budget</label>
+                        <input type="text" id="budget" class="form-control" 
+                               placeholder="e.g., $5 million">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="boxOffice">Box Office</label>
+                        <input type="text" id="boxOffice" class="form-control" 
+                               placeholder="e.g., $100 million">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="aspectRatio">Aspect Ratio</label>
+                        <select id="aspectRatio" class="form-control">
+                            <option value="16:9" selected>16:9 (Widescreen)</option>
+                            <option value="4:3">4:3 (Standard)</option>
+                            <option value="1.85:1">1.85:1</option>
+                            <option value="2.35:1">2.35:1 (CinemaScope)</option>
+                            <option value="1.43:1">1.43:1 (IMAX)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="color">Color Info</label>
+                        <select id="color" class="form-control">
+                            <option value="Color" selected>Color</option>
+                            <option value="Black and White">Black and White</option>
+                            <option value="Color and B/W">Color and B/W</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. RATINGS & CLASSIFICATION -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-star"></i> Ratings & Classification</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="mpaaRating">MPAA Rating</label>
+                        <select id="mpaaRating" class="form-control">
+                            <option value="Not Rated" selected>Not Rated</option>
+                            <option value="G">G - General</option>
+                            <option value="PG">PG - Parental Guidance</option>
+                            <option value="PG-13">PG-13</option>
+                            <option value="R">R - Restricted</option>
+                            <option value="NC-17">NC-17</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="imdbRating">IMDB Rating</label>
+                        <input type="number" id="imdbRating" class="form-control" step="0.1" min="0" max="10"
+                               placeholder="e.g., 7.5">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="imdbVotes">IMDB Votes</label>
+                        <input type="number" id="imdbVotes" class="form-control" min="0"
+                               placeholder="Number of votes">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="imdbId">IMDB ID</label>
+                        <input type="text" id="imdbId" class="form-control" 
+                               placeholder="tt1234567">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rottenTomatoesScore">Rotten Tomatoes %</label>
+                        <input type="number" id="rottenTomatoesScore" class="form-control" min="0" max="100"
+                               placeholder="0-100">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="metacriticScore">Metacritic Score</label>
+                        <input type="number" id="metacriticScore" class="form-control" min="0" max="100"
+                               placeholder="0-100">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ageRestriction">Age Restriction</label>
+                        <select id="ageRestriction" class="form-control">
+                            <option value="0">All Ages</option>
+                            <option value="7">7+</option>
+                            <option value="13" selected>13+</option>
+                            <option value="16">16+</option>
+                            <option value="18">18+</option>
+                            <option value="21">21+</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="contentWarnings">Content Warnings</label>
+                        <input type="text" id="contentWarnings" class="form-control" 
+                               placeholder="e.g., Violence, Strong Language, Nudity">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="parentalGuidance">Parental Guidance</label>
+                        <textarea id="parentalGuidance" class="form-control" rows="2"
+                                  placeholder="Parental guidance notes"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. TAGS & GENRES -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-tags"></i> Tags & Genres</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="genres">Genres</label>
+                        <input type="text" id="genresInput" class="form-control" 
+                               placeholder="Action, Drama, Comedy">
+                        <div class="tags-container" id="genresContainer"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="keywords">Keywords</label>
+                        <input type="text" id="keywordsInput" class="form-control" 
+                               placeholder="SEO keywords">
+                        <div class="tags-container" id="keywordsContainer"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tags">Tags</label>
+                        <input type="text" id="tagsInput" class="form-control" 
+                               placeholder="Content tags">
+                        <div class="tags-container" id="tagsContainer"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="themes">Themes</label>
+                        <input type="text" id="themesInput" class="form-control" 
+                               placeholder="Movie themes">
+                        <div class="tags-container" id="themesContainer"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 9. ADDITIONAL INFO -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-plus-circle"></i> Additional Info</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="franchise">Franchise/Series</label>
+                        <input type="text" id="franchise" class="form-control" 
+                               placeholder="e.g., Marvel Cinematic Universe">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sequelTo">Sequel To</label>
+                        <input type="text" id="sequelTo" class="form-control" 
+                               placeholder="Title of previous movie">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prequelTo">Prequel To</label>
+                        <input type="text" id="prequelTo" class="form-control" 
+                               placeholder="Title of next movie">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="relatedMovies">Related Movies</label>
+                        <input type="text" id="relatedMovies" class="form-control" 
+                               placeholder="Comma separated movie titles">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="awards">Awards</label>
+                        <input type="text" id="awards" class="form-control" 
+                               placeholder="Awards won">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nominations">Nominations</label>
+                        <input type="text" id="nominations" class="form-control" 
+                               placeholder="Award nominations">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="soundMix">Sound Mix</label>
+                        <input type="text" id="soundMix" class="form-control" 
+                               placeholder="e.g., Dolby Digital, DTS">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 10. SEO & METADATA -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-search"></i> SEO & Metadata</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="metaTitle">Meta Title</label>
+                        <input type="text" id="metaTitle" class="form-control" 
+                               placeholder="SEO title (optional)">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="metaDescription">Meta Description</label>
+                        <textarea id="metaDescription" class="form-control" rows="3"
+                                  placeholder="SEO description (auto-generated)"></textarea>
+                        <div class="character-counter" id="metaDescCounter">0/160</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="metaKeywords">Meta Keywords</label>
+                        <input type="text" id="metaKeywords" class="form-control" 
+                               placeholder="SEO keywords (optional)">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="slug">URL Slug</label>
+                        <input type="text" id="slug" class="form-control" 
+                               placeholder="url-friendly-name">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="button" id="previewBtn" class="btn btn-secondary">
+                    <i class="fas fa-eye"></i> Preview Data
+                </button>
+                <button type="submit" id="submitBtn" class="btn">
+                    <i class="fas fa-cloud-upload-alt"></i> Upload to GitHub
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Global variables
+        let selectedGenres = [];
+        let selectedKeywords = [];
+        let selectedTags = [];
+        let selectedThemes = [];
+        
+        // DOM Elements
+        const form = document.getElementById('uploadForm');
+        const alertMessage = document.getElementById('alertMessage');
+        const filenamePreview = document.getElementById('filenamePreview');
+        const contentTypeInput = document.getElementById('contentType');
+        const translatorInput = document.getElementById('translator');
+        const episodeInfo = document.getElementById('episodeInfo');
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Content type selection with episode info toggle
+            document.querySelectorAll('.type-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.type-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    contentTypeInput.value = this.getAttribute('data-type');
+                    
+                    // Show/hide episode info for TV-SERIES
+                    if (contentTypeInput.value === 'TV-SERIES') {
+                        episodeInfo.style.display = 'block';
+                    } else {
+                        episodeInfo.style.display = 'none';
+                    }
+                    
+                    updateFilenamePreview();
+                });
+            });
+            
+            // Translator selection
+            document.querySelectorAll('.translator-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.translator-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    translatorInput.value = this.getAttribute('data-translator');
+                    updateFilenamePreview();
+                });
+            });
+            
+            // Add new translator
+            document.getElementById('addTranslatorBtn').addEventListener('click', function() {
+                const newTranslator = document.getElementById('newTranslator').value.trim().toUpperCase();
+                if (newTranslator && newTranslator.length > 1) {
+                    // Add to translator options
+                    const option = document.createElement('div');
+                    option.className = 'translator-option';
+                    option.setAttribute('data-translator', newTranslator);
+                    option.textContent = newTranslator;
+                    
+                    option.addEventListener('click', function() {
+                        document.querySelectorAll('.translator-option').forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                        this.classList.add('selected');
+                        translatorInput.value = this.getAttribute('data-translator');
+                        updateFilenamePreview();
+                    });
+                    
+                    document.getElementById('translatorOptions').appendChild(option);
+                    document.getElementById('newTranslator').value = '';
+                    
+                    // Select the new translator
+                    option.click();
+                    showAlert(`Translator "${newTranslator}" added successfully!`, 'success');
+                }
+            });
+            
+            // Update filename preview when title changes
+            document.getElementById('title').addEventListener('input', updateFilenamePreview);
+            
+            // Character counters
+            document.getElementById('title').addEventListener('input', function() {
+                document.getElementById('titleCounter').textContent = `${this.value.length}/100`;
+            });
+            
+            document.getElementById('shortDescription').addEventListener('input', function() {
+                document.getElementById('shortDescCounter').textContent = `${this.value.length}/150`;
+            });
+            
+            document.getElementById('metaDescription').addEventListener('input', function() {
+                document.getElementById('metaDescCounter').textContent = `${this.value.length}/160`;
+            });
+            
+            // Auto-generate slug from title
+            document.getElementById('title').addEventListener('blur', function() {
+                if (this.value && !document.getElementById('slug').value) {
+                    const slug = this.value
+                        .toLowerCase()
+                        .trim()
+                        .replace(/[^\w\s-]/g, '')
+                        .replace(/[\s_-]+/g, '-')
+                        .replace(/^-+|-+$/g, '');
+                    document.getElementById('slug').value = slug;
+                }
+            });
+            
+            // Auto-generate meta description from short description
+            document.getElementById('shortDescription').addEventListener('blur', function() {
+                if (this.value && !document.getElementById('metaDescription').value) {
+                    document.getElementById('metaDescription').value = this.value.substring(0, 160);
+                }
+            });
+            
+            // Tag management functions
+            setupTagInput('genresInput', 'genresContainer', selectedGenres);
+            setupTagInput('keywordsInput', 'keywordsContainer', selectedKeywords);
+            setupTagInput('tagsInput', 'tagsContainer', selectedTags);
+            setupTagInput('themesInput', 'themesContainer', selectedThemes);
+            
+            function setupTagInput(inputId, containerId, array) {
+                const input = document.getElementById(inputId);
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ',') {
+                        e.preventDefault();
+                        const item = this.value.trim().replace(',', '');
+                        if (item && !array.includes(item)) {
+                            array.push(item);
+                            updateTagsDisplay(containerId, array);
+                        }
+                        this.value = '';
+                    }
+                });
+            }
+            
+            function updateTagsDisplay(containerId, array) {
+                const container = document.getElementById(containerId);
+                container.innerHTML = '';
+                
+                array.forEach(item => {
+                    const tag = document.createElement('div');
+                    tag.className = 'tag';
+                    tag.innerHTML = `
+                        ${item}
+                        <span class="tag-remove" onclick="removeItem('${item}', '${containerId}')">&times;</span>
+                    `;
+                    container.appendChild(tag);
+                });
+            }
+            
+            // Global remove function
+            window.removeItem = function(item, containerId) {
+                switch(containerId) {
+                    case 'genresContainer':
+                        selectedGenres = selectedGenres.filter(g => g !== item);
+                        updateTagsDisplay('genresContainer', selectedGenres);
+                        break;
+                    case 'keywordsContainer':
+                        selectedKeywords = selectedKeywords.filter(k => k !== item);
+                        updateTagsDisplay('keywordsContainer', selectedKeywords);
+                        break;
+                    case 'tagsContainer':
+                        selectedTags = selectedTags.filter(t => t !== item);
+                        updateTagsDisplay('tagsContainer', selectedTags);
+                        break;
+                    case 'themesContainer':
+                        selectedThemes = selectedThemes.filter(th => th !== item);
+                        updateTagsDisplay('themesContainer', selectedThemes);
+                        break;
+                }
+            };
+            
+            // Preview button
+            document.getElementById('previewBtn').addEventListener('click', function() {
+                const title = document.getElementById('title').value || 'Movie Title';
+                const translator = translatorInput.value || 'TRANSLATOR';
+                const type = contentTypeInput.value || 'MOVIE';
+                
+                let previewText = `Preview:\n\nTitle: ${title}\nTranslator: ${translator}\nType: ${type}\n\n`;
+                previewText += `Filename: ${filenamePreview.textContent}\n\n`;
+                previewText += `Fields to be saved: ${countFilledFields()} / 70+ fields`;
+                
+                alert(previewText);
+            });
+            
+            // Form submission
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+                
+                try {
+                    // Collect ALL form data
+                    const movieData = {
+                        // Core Identification
+                        title: document.getElementById('title').value,
+                        originalTitle: document.getElementById('originalTitle').value || '',
+                        contentType: contentTypeInput.value,
+                        translator: translatorInput.value,
+                        releaseYear: parseInt(document.getElementById('releaseYear').value),
+                        releaseDate: document.getElementById('releaseDate').value || '',
+                        duration: document.getElementById('duration').value,
+                        quality: document.getElementById('quality').value,
+                        
+                        // Translation Info
+                        originalLanguage: document.getElementById('originalLanguage').value,
+                        translatedLanguage: document.getElementById('translatedLanguage').value,
+                        translationDirection: document.getElementById('translationDirection').value,
+                        subtitlesAvailable: document.getElementById('subtitlesAvailable').checked,
+                        subtitleLanguages: document.getElementById('subtitleLanguages').value.split(',').map(s => s.trim()).filter(s => s),
+                        
+                        // Media URLs
+                        videoUrl: document.getElementById('videoUrl').value,
+                        posterUrl: document.getElementById('posterUrl').value,
+                        thumbnailUrl: document.getElementById('thumbnailUrl').value || '',
+                        trailerUrl: document.getElementById('trailerUrl').value || '',
+                        backdropUrl: document.getElementById('backdropUrl').value || '',
+                        additionalImages: document.getElementById('additionalImages').value.split(',').map(s => s.trim()).filter(s => s),
+                        
+                        // Content Details
+                        description: document.getElementById('description').value,
+                        shortDescription: document.getElementById('shortDescription').value,
+                        tagline: document.getElementById('tagline').value || '',
+                        plot: document.getElementById('plot').value || '',
+                        
+                        // Cast & Crew
+                        director: document.getElementById('director').value || '',
+                        writer: document.getElementById('writer').value || '',
+                        producer: document.getElementById('producer').value || '',
+                        cinematographer: document.getElementById('cinematographer').value || '',
+                        composer: document.getElementById('composer').value || '',
+                        editor: document.getElementById('editor').value || '',
+                        mainCast: document.getElementById('mainCast').value.split(',').map(s => s.trim()).filter(s => s),
+                        supportingCast: document.getElementById('supportingCast').value.split(',').map(s => s.trim()).filter(s => s),
+                        voiceCast: document.getElementById('voiceCast').value.split(',').map(s => s.trim()).filter(s => s),
+                        
+                        // Production Details
+                        productionCompanies: document.getElementById('productionCompanies').value.split(',').map(s => s.trim()).filter(s => s),
+                        distributors: document.getElementById('distributors').value.split(',').map(s => s.trim()).filter(s => s),
+                        countryOfOrigin: document.getElementById('countryOfOrigin').value || 'Rwanda',
+                        filmingLocations: document.getElementById('filmingLocations').value.split(',').map(s => s.trim()).filter(s => s),
+                        budget: document.getElementById('budget').value || '',
+                        boxOffice: document.getElementById('boxOffice').value || '',
+                        aspectRatio: document.getElementById('aspectRatio').value,
+                        color: document.getElementById('color').value,
+                        soundMix: document.getElementById('soundMix').value || '',
+                        audioQuality: document.getElementById('audioQuality').value,
+                        
+                        // Ratings & Classification
+                        mpaaRating: document.getElementById('mpaaRating').value,
+                        imdbRating: document.getElementById('imdbRating').value ? parseFloat(document.getElementById('imdbRating').value) : null,
+                        imdbVotes: document.getElementById('imdbVotes').value ? parseInt(document.getElementById('imdbVotes').value) : 0,
+                        imdbId: document.getElementById('imdbId').value || '',
+                        rottenTomatoesScore: document.getElementById('rottenTomatoesScore').value ? parseInt(document.getElementById('rottenTomatoesScore').value) : null,
+                        metacriticScore: document.getElementById('metacriticScore').value ? parseInt(document.getElementById('metacriticScore').value) : null,
+                        ageRestriction: parseInt(document.getElementById('ageRestriction').value),
+                        contentWarnings: document.getElementById('contentWarnings').value.split(',').map(s => s.trim()).filter(s => s),
+                        parentalGuidance: document.getElementById('parentalGuidance').value || '',
+                        
+                        // Tags & Genres
+                        genres: selectedGenres,
+                        keywords: selectedKeywords,
+                        tags: selectedTags,
+                        themes: selectedThemes,
+                        
+                        // Additional Info
+                        franchise: document.getElementById('franchise').value || '',
+                        sequelTo: document.getElementById('sequelTo').value || '',
+                        prequelTo: document.getElementById('prequelTo').value || '',
+                        relatedMovies: document.getElementById('relatedMovies').value.split(',').map(s => s.trim()).filter(s => s),
+                        awards: document.getElementById('awards').value.split(',').map(s => s.trim()).filter(s => s),
+                        nominations: document.getElementById('nominations').value.split(',').map(s => s.trim()).filter(s => s),
+                        
+                        // SEO & Metadata
+                        metaTitle: document.getElementById('metaTitle').value || document.getElementById('title').value,
+                        metaDescription: document.getElementById('metaDescription').value || document.getElementById('shortDescription').value,
+                        metaKeywords: document.getElementById('metaKeywords').value.split(',').map(s => s.trim()).filter(s => s),
+                        slug: document.getElementById('slug').value || generateSlug(document.getElementById('title').value),
+                        
+                        // TV Series specific
+                        seasonNumber: document.getElementById('seasonNumber').value ? parseInt(document.getElementById('seasonNumber').value) : 1,
+                        episodeNumber: document.getElementById('episodeNumber').value ? parseInt(document.getElementById('episodeNumber').value) : 1,
+                        episodeTitle: document.getElementById('episodeTitle').value || '',
+                        totalSeasons: document.getElementById('totalSeasons').value ? parseInt(document.getElementById('totalSeasons').value) : 1,
+                        episodeCount: 1,
+                        
+                        // Metadata
+                        dateAdded: new Date().toISOString(),
+                        featured: false,
+                        trending: false,
+                        recommended: false,
+                        views: 0,
+                        likes: 0
+                    };
+                    
+                    // Call Cloudflare function
+                    const response = await fetch('/api/trans-uploader', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(movieData)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showAlert(`✅ Success! File created: ${result.smartFilename}\nGitHub: ${result.githubUrl}`, 'success');
+                        
+                        // Reset form
+                        form.reset();
+                        selectedGenres = [];
+                        selectedKeywords = [];
+                        selectedTags = [];
+                        selectedThemes = [];
+                        updateTagsDisplay('genresContainer', selectedGenres);
+                        updateTagsDisplay('keywordsContainer', selectedKeywords);
+                        updateTagsDisplay('tagsContainer', selectedTags);
+                        updateTagsDisplay('themesContainer', selectedThemes);
+                        
+                        // Reset to defaults
+                        document.getElementById('releaseYear').value = '2024';
+                        document.getElementById('quality').value = '1080p';
+                        document.getElementById('originalLanguage').value = 'Kinyarwanda';
+                        document.getElementById('translatedLanguage').value = 'English';
+                        document.getElementById('translationDirection').value = 'Kinyarwanda-to-English';
+                        document.getElementById('audioQuality').value = 'Good';
+                        document.getElementById('mpaaRating').value = 'Not Rated';
+                        document.getElementById('ageRestriction').value = '13';
+                        document.getElementById('aspectRatio').value = '16:9';
+                        document.getElementById('color').value = 'Color';
+                        document.getElementById('countryOfOrigin').value = 'Rwanda';
+                        
+                        // Select defaults
+                        document.querySelector('.type-option[data-type="MOVIE"]').click();
+                        document.querySelector('.translator-option[data-translator="ROCKY"]').click();
+                        
+                        // Clear character counters
+                        document.getElementById('titleCounter').textContent = '0/100';
+                        document.getElementById('shortDescCounter').textContent = '0/150';
+                        document.getElementById('metaDescCounter').textContent = '0/160';
+                        
+                    } else {
+                        throw new Error(result.message || 'Upload failed');
+                    }
+                    
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    showAlert('❌ Error: ' + error.message, 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Upload to GitHub';
+                }
+            });
+        });
+        
+        // Update filename preview
+        function updateFilenamePreview() {
+            const title = document.getElementById('title').value || 'MOVIE-TITLE';
+            const type = contentTypeInput.value || 'MOVIE';
+            const translator = translatorInput.value || 'TRANSLATOR';
+            
+            const cleanTitle = title.toUpperCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').substring(0, 40);
+            const cleanType = type.toUpperCase();
+            const cleanTranslator = translator.toUpperCase();
+            
+            filenamePreview.textContent = `[${cleanTitle}][${cleanType}][${cleanTranslator}].md`;
+        }
+        
+        // Count filled fields for preview
+        function countFilledFields() {
+            let count = 0;
+            const inputs = form.querySelectorAll('input, textarea, select');
+            inputs.forEach(input => {
+                if (input.type !== 'hidden' && input.value && input.value.trim() !== '') {
+                    count++;
+                }
+            });
+            return count;
+        }
+        
+        // Generate slug
+        function generateSlug(title) {
+            return title
+                .toLowerCase()
+                .trim()
+                .replace(/[^\w\s-]/g, '')
+                .replace(/[\s_-]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+        }
+        
+        // Show alert
+        function showAlert(message, type = 'success') {
+            alertMessage.textContent = message;
+            alertMessage.className = `alert alert-${type}`;
+            alertMessage.style.display = 'block';
+            
+            setTimeout(() => {
+                alertMessage.style.display = 'none';
+            }, 8000);
+        }
+    </script>
+</body>
+    </html>

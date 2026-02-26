@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Movie - Rwanda Cinema</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Previous CSS remains the same, adding new styles below */
+        :root {
+            --primary: #008753;
+            --secondary: #FAD201;
+            --accent: #00A1DE;
+            --dark: #1a1a1a;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .upload-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .upload-header {
+            background: var(--primary);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .upload-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-section {
+            padding: 2rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--secondary);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .required::after {
+            content: " *";
+            color: var(--danger);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 135, 83, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-help {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .tag {
+            background: var(--light);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tag-remove {
+            color: var(--danger);
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: #006641;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--gray);
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            padding: 2rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .category-selector {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .category-pill {
+            padding: 8px 16px;
+            background: var(--light);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .category-pill:hover {
+            background: #e9ecef;
+        }
+
+        .category-pill.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .new-category-input {
+            display: none;
+            gap: 10px;
+            align-items: center;
+        }
+
+        #newCategoryName {
+            flex: 1;
+        }
+
+        .video-preview {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .thumbnail-container {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: var(--light);
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .thumbnail-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .thumbnail-option {
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .thumbnail-option:hover {
+            transform: scale(1.05);
+        }
+
+        .thumbnail-option.selected {
+            border-color: var(--primary);
+        }
+
+        .thumbnail-option img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+        }
+
+        .thumbnail-quality {
+            text-align: center;
+            font-size: 0.8rem;
+            padding: 5px;
+            background: white;
+        }
+
+        .video-preview-container {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: var(--light);
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .video-preview-embed {
+            width: 100%;
+            max-width: 560px;
+            height: 315px;
+            border: none;
+            border-radius: 8px;
+        }
+
+        .preview-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .preview-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+
+        .preview-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        .character-counter {
+            font-size: 0.8rem;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .character-counter.warning {
+            color: #ff9800;
+        }
+
+        .character-counter.error {
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        .input-warning {
+            border-color: #ff9800 !important;
+            box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1) !important;
+        }
+
+        .input-error {
+            border-color: var(--danger) !important;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1) !important;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <div class="upload-header">
+            <h1><i class="fas fa-film"></i> Upload New Movie</h1>
+            <p>Add Rwandan movies to our streaming platform</p>
+        </div>
+
+        <div id="alertMessage" class="alert" style="display: none;"></div>
+
+        <form id="movieUploadForm">
+            <!-- Basic Information Section -->
+            <div class="form-section">
+                <h2 class="section-title">Basic Information</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="movieTitle" class="required">Movie Title</label>
+                        <input type="text" id="movieTitle" class="form-control" required 
+                               placeholder="Enter movie title" maxlength="70">
+                        <div class="form-help">This will be used for the page title and URL (max 70 characters)</div>
+                        <div class="character-counter" id="titleCounter">0/70 characters</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="releaseYear" class="required">Release Year</label>
+                        <input type="number" id="releaseYear" class="form-control" required 
+                               min="1950" max="2030" placeholder="2024">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="duration" class="required">Duration</label>
+                        <input type="text" id="duration" class="form-control" required 
+                               placeholder="e.g., 1h 45m or 105 minutes">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="language" class="required">Primary Language</label>
+                        <select id="language" class="form-control" required>
+                            <option value="">Select language</option>
+                            <option value="Kinyarwanda">Kinyarwanda</option>
+                            <option value="English">English</option>
+                            <option value="French">French</option>
+                            <option value="Swahili">Swahili</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category & Classification Section -->
+            <div class="form-section">
+                <h2 class="section-title">Category & Classification</h2>
+                <div class="form-group">
+                    <label class="required">Select Category</label>
+                    <div class="category-selector" id="categorySelector">
+                        <div class="category-pill" data-category="comedy">Comedy</div>
+                        <div class="category-pill" data-category="drama">Drama</div>
+                        <div class="category-pill" data-category="action">Action</div>
+                        <div class="category-pill" data-category="music">Music 🎶</div>
+                    </div>
+                    <input type="hidden" id="selectedCategory" required>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="rating">Content Rating</label>
+                        <select id="rating" class="form-control">
+                            <option value="G">G - General Audience</option>
+                            <option value="PG">PG - Parental Guidance</option>
+                            <option value="PG-13">PG-13 - Teens and Above</option>
+                            <option value="R">R - Restricted</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quality">Video Quality</label>
+                        <select id="quality" class="form-control">
+                            <option value="480p">480p SD</option>
+                            <option value="720p">720p HD</option>
+                            <option value="1080p" selected>1080p Full HD</option>
+                            <option value="4K">4K Ultra HD</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Details Section -->
+            <div class="form-section">
+                <h2 class="section-title">Content Details</h2>
+                <div class="form-group full-width">
+                    <label for="description" class="required">Movie Description</label>
+                    <textarea id="description" class="form-control" required 
+                              placeholder="Provide a detailed description of the movie plot, themes, and significance..."></textarea>
+                    <div class="form-help">This description will be used for SEO meta description</div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="videoUrl" class="required">YouTube URL or Video File URL</label>
+                    <input type="url" id="videoUrl" class="form-control" required 
+                           placeholder="https://youtube.com/watch?v=... or https://example.com/video.mp4">
+                    <div class="form-help">Enter YouTube link or direct video file URL. YouTube links will be converted to embed format automatically.</div>
+                    
+                    <!-- YouTube Thumbnail Selection -->
+                    <div class="thumbnail-container" id="thumbnailContainer">
+                        <label>Select Thumbnail:</label>
+                        <div class="loading" id="thumbnailLoading">
+                            <i class="fas fa-spinner"></i> Loading thumbnails...
+                        </div>
+                        <div class="thumbnail-options" id="thumbnailOptions"></div>
+                    </div>
+
+                    <!-- Video Preview -->
+                    <div class="video-preview-container" id="videoPreviewContainer">
+                        <label>Video Preview:</label>
+                        <iframe class="video-preview-embed" id="videoPreviewEmbed" 
+                                src="" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="posterUrl" class="required">Poster Image URL</label>
+                    <input type="url" id="posterUrl" class="form-control" required 
+                           placeholder="https://example.com/path/to/movie-poster.jpg">
+                    <div class="form-help">URL to the movie poster image (recommended: 800x1200px)</div>
+                </div>
+            </div>
+
+            <!-- Cast & Crew Section -->
+            <div class="form-section">
+                <h2 class="section-title">Cast & Crew</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="director">Director</label>
+                        <input type="text" id="director" class="form-control" 
+                               placeholder="Director's full name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="producer">Producer</label>
+                        <input type="text" id="producer" class="form-control" 
+                               placeholder="Producer's full name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mainCast">Main Cast</label>
+                        <input type="text" id="mainCast" class="form-control" 
+                               placeholder="Lead actor names separated by commas">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="supportingCast">Supporting Cast</label>
+                        <input type="text" id="supportingCast" class="form-control" 
+                               placeholder="Supporting actor names">
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEO & Metadata Section -->
+            <div class="form-section">
+                <h2 class="section-title">SEO & Metadata</h2>
+                <div class="form-group full-width">
+                    <label for="metaDescription">Meta Description</label>
+                    <textarea id="metaDescription" class="form-control" 
+                              placeholder="Optional: Custom meta description for SEO (auto-generated if empty)"></textarea>
+                    <div class="form-help">Keep it under 160 characters for optimal SEO</div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="tags">Tags & Keywords</label>
+                    <input type="text" id="tagsInput" class="form-control" 
+                           placeholder="Add tags separated by commas (e.g., Rwanda, Kigali, family drama)">
+                    <div class="tags-container" id="tagsContainer"></div>
+                    <div class="form-help">Tags improve searchability and SEO</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="slug">URL Slug</label>
+                    <input type="text" id="slug" class="form-control" 
+                           placeholder="auto-generated-from-title">
+                    <div class="form-help">Custom URL path for this movie</div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="button" id="previewBtn" class="btn btn-secondary">
+                    <i class="fas fa-eye"></i> Preview Movie
+                </button>
+                <button type="submit" id="submitBtn" class="btn">
+                    <i class="fas fa-upload"></i> Upload Movie
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="preview-modal" id="previewModal">
+        <div class="preview-close" id="previewClose">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="preview-content" id="previewContent">
+            <!-- Preview content will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let selectedTags = [];
+        let categories = ['comedy', 'drama', 'action', 'music'];
+        let selectedThumbnail = '';
+        let youtubeVideoId = '';
+        let embedUrl = '';
+
+        // DOM Elements
+        const form = document.getElementById('movieUploadForm');
+        const alertMessage = document.getElementById('alertMessage');
+        const categorySelector = document.getElementById('categorySelector');
+        const newCategoryInput = document.getElementById('newCategoryInput');
+        const addNewCategoryBtn = document.getElementById('addNewCategory');
+        const saveNewCategoryBtn = document.getElementById('saveNewCategory');
+        const cancelNewCategoryBtn = document.getElementById('cancelNewCategory');
+        const selectedCategoryInput = document.getElementById('selectedCategory');
+        const tagsInput = document.getElementById('tagsInput');
+        const tagsContainer = document.getElementById('tagsContainer');
+        const movieTitleInput = document.getElementById('movieTitle');
+        const slugInput = document.getElementById('slug');
+        const videoUrlInput = document.getElementById('videoUrl');
+        const thumbnailContainer = document.getElementById('thumbnailContainer');
+        const thumbnailOptions = document.getElementById('thumbnailOptions');
+        const thumbnailLoading = document.getElementById('thumbnailLoading');
+        const videoPreviewContainer = document.getElementById('videoPreviewContainer');
+        const videoPreviewEmbed = document.getElementById('videoPreviewEmbed');
+        const previewModal = document.getElementById('previewModal');
+        const previewContent = document.getElementById('previewContent');
+        const previewClose = document.getElementById('previewClose');
+        const previewBtn = document.getElementById('previewBtn');
+        const titleCounter = document.getElementById('titleCounter');
+
+        // Character counter for title
+        movieTitleInput.addEventListener('input', function() {
+            const length = this.value.length;
+            const maxLength = 70;
+            
+            titleCounter.textContent = `${length}/${maxLength} characters`;
+            
+            // Update styling based on character count
+            if (length > maxLength - 10 && length <= maxLength) {
+                titleCounter.className = 'character-counter warning';
+                this.classList.add('input-warning');
+                this.classList.remove('input-error');
+            } else if (length > maxLength) {
+                titleCounter.className = 'character-counter error';
+                this.classList.add('input-error');
+                this.classList.remove('input-warning');
+            } else {
+                titleCounter.className = 'character-counter';
+                this.classList.remove('input-warning', 'input-error');
+            }
+        });
+
+        // YouTube URL processing
+        videoUrlInput.addEventListener('blur', function() {
+            const url = this.value.trim();
+            if (!url) return;
+
+            if (isYouTubeUrl(url)) {
+                processYouTubeUrl(url);
+            } else {
+                // Hide YouTube-specific features for non-YouTube URLs
+                thumbnailContainer.style.display = 'none';
+                videoPreviewContainer.style.display = 'none';
+                // For non-YouTube URLs, use the original URL
+                embedUrl = url;
+            }
+        });
+
+        function isYouTubeUrl(url) {
+            return url.includes('youtube.com') || url.includes('youtu.be');
+        }
+
+        function extractYouTubeVideoId(url) {
+            // Handle various YouTube URL formats
+            const patterns = [
+                /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/,
+                /youtube\.com\/embed\/([^?]+)/,
+                /youtube\.com\/v\/([^?]+)/,
+                /youtube\.com\/watch\?.*v=([^&]+)/
+            ];
+            
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match && match[1]) {
+                    return match[1].substring(0, 11); // YouTube IDs are always 11 characters
+                }
+            }
+            return null;
+        }
+
+        function convertToEmbedUrl(videoId) {
+            return `https://www.youtube.com/embed/${videoId}`;
+        }
+
+        function convertToEmbedUrlFromRegular(url) {
+            const videoId = extractYouTubeVideoId(url);
+            if (videoId) {
+                return convertToEmbedUrl(videoId);
+            }
+            return url; // Return original if conversion fails
+        }
+
+        async function processYouTubeUrl(url) {
+            youtubeVideoId = extractYouTubeVideoId(url);
+            if (!youtubeVideoId) {
+                showAlert('Invalid YouTube URL. Please check the format.', 'error');
+                return;
+            }
+
+            // Convert to embed URL
+            embedUrl = convertToEmbedUrl(youtubeVideoId);
+            
+            // Update the video URL field with embed URL for clarity
+            videoUrlInput.value = embedUrl;
+
+            // Show loading
+            thumbnailLoading.style.display = 'block';
+            thumbnailContainer.style.display = 'block';
+            thumbnailOptions.innerHTML = '';
+
+            try {
+                // Get YouTube thumbnails
+                const thumbnails = getYouTubeThumbnails(youtubeVideoId);
+                displayThumbnails(thumbnails);
+
+                // Show video preview
+                videoPreviewEmbed.src = embedUrl;
+                videoPreviewContainer.style.display = 'block';
+
+            } catch (error) {
+                console.error('Error processing YouTube URL:', error);
+                showAlert('Error processing YouTube video', 'error');
+            } finally {
+                thumbnailLoading.style.display = 'none';
+            }
+        }
+
+        function getYouTubeThumbnails(videoId) {
+            // YouTube thumbnail URLs pattern
+            return {
+                maxres: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+                sd: `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+                hq: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+                mq: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+                default: `https://img.youtube.com/vi/${videoId}/default.jpg`
+            };
+        }
+
+        function displayThumbnails(thumbnails) {
+            thumbnailOptions.innerHTML = '';
+            
+            Object.entries(thumbnails).forEach(([quality, url]) => {
+                const thumbnailOption = document.createElement('div');
+                thumbnailOption.className = 'thumbnail-option';
+                thumbnailOption.innerHTML = `
+                    <img src="${url}" alt="${quality} thumbnail" onerror="this.style.display='none'">
+                    <div class="thumbnail-quality">${quality.toUpperCase()}</div>
+                `;
+                
+                thumbnailOption.addEventListener('click', () => {
+                    // Remove selected class from all options
+                    thumbnailOptions.querySelectorAll('.thumbnail-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked option
+                    thumbnailOption.classList.add('selected');
+                    
+                    // Set the selected thumbnail URL
+                    selectedThumbnail = url;
+                    
+                    // Auto-fill poster URL if empty
+                    const posterUrlInput = document.getElementById('posterUrl');
+                    if (!posterUrlInput.value) {
+                        posterUrlInput.value = url;
+                    }
+                });
+                
+                thumbnailOptions.appendChild(thumbnailOption);
+            });
+        }
+
+        // Preview functionality
+        previewBtn.addEventListener('click', function() {
+            showPreview();
+        });
+
+        previewClose.addEventListener('click', function() {
+            previewModal.style.display = 'none';
+            videoPreviewEmbed.src = ''; // Stop video playback when closing
+        });
+
+        function showPreview() {
+            // Validate title length
+            if (movieTitleInput.value.length > 70) {
+                showAlert('Movie title must be 70 characters or less. Please shorten your title.', 'error');
+                movieTitleInput.focus();
+                return;
+            }
+
+            // Collect form data
+            const formData = {
+                title: document.getElementById('movieTitle').value || 'Movie Title',
+                year: document.getElementById('releaseYear').value || '2024',
+                duration: document.getElementById('duration').value || '2h',
+                category: selectedCategoryInput.value || 'drama',
+                rating: document.getElementById('rating').value || 'PG',
+                description: document.getElementById('description').value || 'No description provided.',
+                director: document.getElementById('director').value || 'Not specified',
+                cast: document.getElementById('mainCast').value || 'Not specified'
+            };
+
+            // Determine video source
+            let videoSource = '';
+            if (embedUrl) {
+                if (isYouTubeUrl(embedUrl)) {
+                    videoSource = `<iframe width="100%" height="315" src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`;
+                } else {
+                    videoSource = `<video width="100%" controls><source src="${embedUrl}" type="video/mp4">Your browser does not support the video tag.</video>`;
+                }
+            } else {
+                videoSource = '<p>No video source provided</p>';
+            }
+
+            // Create preview HTML
+            previewContent.innerHTML = `
+                <div style="max-width: 800px; margin: 0 auto;">
+                    <h2 style="color: var(--primary); margin-bottom: 1rem;">${formData.title} (${formData.year})</h2>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; margin-bottom: 2rem;">
+                        <div>
+                            ${selectedThumbnail ? `<img src="${selectedThumbnail}" alt="${formData.title}" style="width: 100%; border-radius: 8px;">` : 
+                            '<div style="background: #f0f0f0; padding: 2rem; text-align: center; border-radius: 8px;">No poster image</div>'}
+                        </div>
+                        <div>
+                            <p><strong>Duration:</strong> ${formData.duration}</p>
+                            <p><strong>Category:</strong> ${formData.category}</p>
+                            <p><strong>Rating:</strong> ${formData.rating}</p>
+                            <p><strong>Director:</strong> ${formData.director}</p>
+                            <p><strong>Cast:</strong> ${formData.cast}</p>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="color: var(--primary); margin-bottom: 1rem;">Description</h3>
+                        <p>${formData.description}</p>
+                    </div>
+                    
+                    <div>
+                        <h3 style="color: var(--primary); margin-bottom: 1rem;">Video Preview</h3>
+                        ${videoSource}
+                    </div>
+                </div>
+            `;
+
+            // Show modal
+            previewModal.style.display = 'flex';
+        }
+
+        // Close modal when clicking outside
+        previewModal.addEventListener('click', function(e) {
+            if (e.target === previewModal) {
+                previewModal.style.display = 'none';
+                videoPreviewEmbed.src = ''; // Stop video playback when closing
+            }
+        });
+
+        // Form validation before submission
+        form.addEventListener('submit', function(e) {
+            if (movieTitleInput.value.length > 70) {
+                e.preventDefault();
+                showAlert('Movie title must be 70 characters or less. Please shorten your title.', 'error');
+                movieTitleInput.focus();
+                return false;
+            }
+        });
+
+        // Initialize categories (existing function)
+        function initializeCategories() {
+            const existingCategories = categorySelector.querySelectorAll('.category-pill:not(#addNewCategory)');
+            existingCategories.forEach(cat => cat.remove());
+
+            categories.forEach(category => {
+                const pill = document.createElement('div');
+                pill.className = 'category-pill';
+                
+                if (category === 'music') {
+                    pill.textContent = 'Music 🎶';
+                } else {
+                    pill.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+                }
+                
+                pill.setAttribute('data-category', category);
+                pill.addEventListener('click', () => selectCategory(category));
+                categorySelector.insertBefore(pill, addNewCategoryBtn);
+            });
+        }
+
+        // Category selection (existing function)
+        function selectCategory(category) {
+            categorySelector.querySelectorAll('.category-pill').forEach(pill => {
+                pill.classList.remove('active');
+            });
+            const selectedPill = categorySelector.querySelector(`[data-category="${category}"]`);
+            if (selectedPill) {
+                selectedPill.classList.add('active');
+            }
+            selectedCategoryInput.value = category;
+        }
+
+        // Tags management (existing functions)
+        tagsInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ',') {
+                e.preventDefault();
+                const tag = tagsInput.value.trim().replace(',', '');
+                if (tag && !selectedTags.includes(tag)) {
+                    selectedTags.push(tag);
+                    updateTagsDisplay();
+                }
+                tagsInput.value = '';
+            }
+        });
+
+        function updateTagsDisplay() {
+            tagsContainer.innerHTML = '';
+            selectedTags.forEach(tag => {
+                const tagElement = document.createElement('div');
+                tagElement.className = 'tag';
+                tagElement.innerHTML = `
+                    ${tag}
+                    <span class="tag-remove" onclick="removeTag('${tag}')">&times;</span>
+                `;
+                tagsContainer.appendChild(tagElement);
+            });
+        }
+
+        function removeTag(tag) {
+            selectedTags = selectedTags.filter(t => t !== tag);
+            updateTagsDisplay();
+        }
+
+        // Auto-generate slug from title (existing function)
+        movieTitleInput.addEventListener('blur', () => {
+            if (!slugInput.value) {
+                const slug = movieTitleInput.value
+                    .toLowerCase()
+                    .trim()
+                    .replace(/[^\w\s-]/g, '')
+                    .replace(/[\s_-]+/g, '-')
+                    .replace(/^-+|-+$/g, '');
+                slugInput.value = slug;
+            }
+        });
+
+        // Auto-generate meta description (existing function)
+        document.getElementById('description').addEventListener('blur', function() {
+            const metaDesc = document.getElementById('metaDescription');
+            if (!metaDesc.value && this.value) {
+                const shortDesc = this.value.substring(0, 157) + '...';
+                metaDesc.value = shortDesc;
+            }
+        });
+
+        // Show alert message (existing function)
+        function showAlert(message, type = 'success') {
+            alertMessage.textContent = message;
+            alertMessage.className = `alert alert-${type}`;
+            alertMessage.style.display = 'block';
+            
+            setTimeout(() => {
+                alertMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        // Form submission (existing function)
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Validate title length before submission
+            if (movieTitleInput.value.length > 70) {
+                showAlert('Movie title must be 70 characters or less. Please shorten your title.', 'error');
+                movieTitleInput.focus();
+                return;
+            }
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+
+            try {
+                // Collect form data
+                const movieData = {
+                    title: document.getElementById('movieTitle').value,
+                    releaseYear: parseInt(document.getElementById('releaseYear').value),
+                    duration: document.getElementById('duration').value,
+                    language: document.getElementById('language').value,
+                    category: selectedCategoryInput.value,
+                    rating: document.getElementById('rating').value,
+                    quality: document.getElementById('quality').value,
+                    description: document.getElementById('description').value,
+                    videoUrl: embedUrl || document.getElementById('videoUrl').value, // Use embed URL if available
+                    posterUrl: document.getElementById('posterUrl').value,
+                    director: document.getElementById('director').value,
+                    producer: document.getElementById('producer').value,
+                    mainCast: document.getElementById('mainCast').value,
+                    supportingCast: document.getElementById('supportingCast').value,
+                    metaDescription: document.getElementById('metaDescription').value || document.getElementById('description').value.substring(0, 160),
+                    tags: selectedTags,
+                    slug: document.getElementById('slug').value || generateSlug(document.getElementById('movieTitle').value),
+                    youtubeThumbnail: selectedThumbnail,
+                    youtubeVideoId: youtubeVideoId,
+                    createdAt: new Date().toISOString()
+                };
+
+                // Save to GitHub via Cloudflare Pages function
+                const response = await saveMovieToGitHub(movieData);
+
+                if (response.success) {
+                    showAlert('Movie uploaded successfully! The page will be live in a few minutes.', 'success');
+                    form.reset();
+                    selectedTags = [];
+                    selectedThumbnail = '';
+                    youtubeVideoId = '';
+                    embedUrl = '';
+                    updateTagsDisplay();
+                    thumbnailContainer.style.display = 'none';
+                    videoPreviewContainer.style.display = 'none';
+                    titleCounter.textContent = '0/70 characters';
+                    titleCounter.className = 'character-counter';
+                    selectCategory('comedy');
+                } else {
+                    throw new Error(response.message || 'Upload failed');
+                }
+
+            } catch (error) {
+                console.error('Upload error:', error);
+                showAlert('Error uploading movie: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Movie';
+            }
+        });
+
+        // Generate slug from title (existing function)
+        function generateSlug(title) {
+            return title
+                .toLowerCase()
+                .trim()
+                .replace(/[^\w\s-]/g, '')
+                .replace(/[\s_-]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+        }
+
+        // Save movie to GitHub (existing function)
+        async function saveMovieToGitHub(movieData) {
+            let filePath;
+            if (movieData.category === 'music') {
+                filePath = `content/music/${movieData.slug}.md`;
+            } else {
+                filePath = `content/movies/${movieData.category}/${movieData.slug}.md`;
+            }
+
+            movieData.filePath = filePath;
+
+            try {
+                const response = await fetch('/api/upload-movie', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(movieData)
+                });
+
+                return await response.json();
+            } catch (error) {
+                throw new Error('Failed to save movie data: ' + error.message);
+            }
+        }
+
+        // Initialize the form
+        initializeCategories();
+        selectCategory('comedy');
+    </script>
+</body>
+</html>
